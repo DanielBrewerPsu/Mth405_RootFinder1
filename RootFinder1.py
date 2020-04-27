@@ -27,7 +27,7 @@ if a_1 >= b_1:
 a_n = a_1
 b_n = b_1
 k = 3       # Number of digits to get to match
-minimumDeltaX = 1.0 / (2 * 10**(k + 1)) # 1/2 of the decimal place we care about
+minimumDeltaX = 1.0 / (2 * 10**(k)) # 1/2 of the decimal place we care about
 
 # Print column headers
 print("n Step   a_n left    f(a_n) b_n right  f(b_n) c_n mid     f(c_n) a-b delta" +
