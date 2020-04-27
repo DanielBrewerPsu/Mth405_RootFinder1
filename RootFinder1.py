@@ -1,17 +1,56 @@
 #!/usr/local/bin/python3
 
-#import numpy as np
+import numpy as np
 #todo: I want to plot this whole thing visually, but a spreadsheet is good enough for now.
 #import matplotlib.pyplot as plt
 #xs = []     # x's is the x values of the data points to scatter plot
 # Plot f(x)
 #fxs = []    # y=f(x) values at each x point
 import math
+import random
+random.seed()
+
+class Polynomial(object):
+    # degree is the highest degree (exponent) in the polynomial. For ex: x^4 + 2x^2 is degree 4
+    def __init__(self, degree, maxCoefficient):
+        self.degree = degree
+        # self.coefficients is the coefficient numbers on each x term. coefficients[2] is
+        # x^2 term, coefficients[1] is the x^1 term, [0] is the "constant" term (times x^0).
+        self.coefficients = np.random.rand(self.degree + 1)
+        # Now, coefficients holds floats ranging from 0.0 to 0.1. Instead, shift this to
+        # the range of -maxCoefficient to maxCoefficient
+        self.coefficients = (self.coefficients - 0.5) * (2 * maxCoefficient)
+
+    # returns a string describing the polynomial like: "10x^3 -1.5x^2 + 99x - 45.5"
+    def getDescription(self):
+        result = ""
+        bIsFirstTerm = True
+        for i in range(self.degree, 0, -1):
+            if bIsFirstTerm:
+                bIsFirstTerm = False
+            else:
+                result = result + " + "
+            #result = result + "{:.f}".format(self.coefficients[i]) + "x^" + str(i)
+            result = result + str(self.coefficients[i]) + "x^" + str(i)
+        # The loop above stopped before printing 0, which is a special case anyway
+        #result = result + "{:.f}".format(self.coefficients[0])
+        result = result + " + " + str(self.coefficients[0])
+        return result
+
+    # returns the value of this function evaluated at x
+    def evalAt(self, x):
+        result = self.coefficients[0]
+        for i in range(1, self.degree + 1):
+            result = result + self.coefficients[i] * (x ** i)
+        return result
 
 
-def f(x):
-    return -1*x**3 + 10*x + 15 # The function in HW8
+# Make a Polynomial for the function in HW8: -1*x**3 + 10*x + 15
+hw8Poly = Polynomial(3, 1.0)
+hw8Poly.coefficients = [15.0, 10.0, 0.0, -1.0]
+print("HW8 poly looks like: " + hw8Poly.getDescription())
 
+#def f(x):s
     #This approximates the function in worksheet 8, a discontinuous graph
     # if x <= 3.6875:
     #     return 5
@@ -34,6 +73,8 @@ minimumDeltaX = 1.0 / (2 * 10**(k)) # 1/2 of the decimal place we care about
 print("n Step   a_n left    f(a_n) b_n right  f(b_n) c_n mid     f(c_n) a-b delta" +
       "   error in f")
 
+# f is the function we'll evaluate in this root approximation algorithm
+f = hw8Poly.evalAt
 kMaxIterations = 50
 for n in range(1, kMaxIterations):
     f_a_n = f(a_n)
