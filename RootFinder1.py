@@ -6,6 +6,7 @@
 #xs = []     # x's is the x values of the data points to scatter plot
 # Plot f(x)
 #fxs = []    # y=f(x) values at each x point
+import math
 
 
 def f(x):
@@ -41,11 +42,11 @@ for n in range(1, kMaxIterations):
     f_c_n = f(c_n)
     deltaX = (b_n - a_n)
 
-    rowData = (n,   \
-        a_n, f_a_n, \
-        b_n, f_b_n, \
-        c_n, f_c_n, \
-        deltaX, abs(f_a_n) + abs(f_b_n))
+    rowData = (n,
+               a_n, f_a_n,
+               b_n, f_b_n,
+               c_n, f_c_n,
+               deltaX, abs(f_a_n) + abs(f_b_n))
     print("%6d  % 1.7f  % 2.2f  % 1.7f  % 2.2f  %1.8f  % 2.2f  %1.7f  % 2.2f" %
           rowData)
 
@@ -73,4 +74,12 @@ for n in range(1, kMaxIterations):
                     print("Something went wrong because both f(a_n) >= 0 and f(b_n) >=  0")
                     break
 
-print(("The approximate root is {: 2." + str(k + 1) + "}").format(c_n))
+
+# For this class, we want to show "k correct digits", which is not quite
+# the same as rounding down. Here, we display extra digits and then truncate,
+# which is very close to the correct thing.
+cAsInt = math.floor(c_n) if (c_n > 0) else math.ceil(c_n)
+cDecimals = abs(c_n - cAsInt)
+cDecimalsAsString = "{:.20}".format(cDecimals)
+cAsString = str(cAsInt) + cDecimalsAsString[1:k+2]
+print("The approximate root is " + cAsString)
