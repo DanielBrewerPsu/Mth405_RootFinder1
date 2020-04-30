@@ -11,7 +11,6 @@ import random
 random.seed()
 
 
-
 class Polynomial(object):
     # degree is the highest degree (exponent) in the polynomial. For ex: x^4 + 2x^2 is degree 4
     def __init__(self, degree, maxCoefficient):
@@ -71,60 +70,61 @@ f = fFromDay8   # f is the function we'll evaluate in this root approximation al
 if a_1 >= b_1:
     print("a_1 must be less than b_1")
     exit(0)
-a_n = a_1
-b_n = b_1
-minimumDeltaX = 1.0 / (2 * 10**(k)) # 1/2 of the decimal place we care about
+a = a_1
+b = b_1
+minimumDeltaX = 1.0 / (2 * 10**k)  # 1/2 of the decimal place we care about
 # Print column headers
-print("n Step   a_n left    f(a_n) b_n right  f(b_n) c_n mid     f(c_n) a-b delta" +
+print("n Step   a left    f(a) b right  f(b) c mid     f(c) a-b delta" +
       "   error in f")
 kMaxIterations = 50
 
 
 for n in range(1, kMaxIterations):
-    f_a_n = f(a_n)
-    f_b_n = f(b_n)
-    c_n = (b_n + a_n)/2
-    f_c_n = f(c_n)
-    deltaX = (b_n - a_n)
+    f_a_n = f(a)
+    f_b_n = f(b)
+    c = (b + a)/2
+    f_c_n = f(c)
+    deltaX = (b - a)
 
     rowData = (n,
-               a_n, f_a_n,
-               b_n, f_b_n,
-               c_n, f_c_n,
+               a, f_a_n,
+               b, f_b_n,
+               c, f_c_n,
                deltaX, abs(f_a_n) + abs(f_b_n))
     print("%6d  % 1.7f  % 2.2f  % 1.7f  % 2.2f  %1.8f  % 2.2f  %1.7f  % 2.2f" %
           rowData)
 
+    # Advance to the next step by moving either a or b closer to each other
     if deltaX < minimumDeltaX:
         print("Exiting after finding " + str(k) + " matching digits...")
         break
     else:
-        # Move either b_n+1 or a_n+1 to c_n, depending on which one's sign matches f(c_n)
+        # Move either b+1 or a+1 to c, depending on which one's sign matches f(c)
         if f_c_n >= 0:
             if f_a_n >= 0:
-                a_n = c_n
+                a = c
             else:
                 if f_b_n >= 0:
-                    b_n = c_n
+                    b = c
                 else:
-                    print("Something went wrong because both f(a_n) < 0 and f(b_n) < 0")
+                    print("Something went wrong because both f(a) < 0 and f(b) < 0")
                     break
         else:   # f_c_n < 0:
             if f_a_n < 0:
-                a_n = c_n
+                a = c
             else:
                 if f_b_n < 0:
-                    b_n = c_n
+                    b = c
                 else:
-                    print("Something went wrong because both f(a_n) >= 0 and f(b_n) >=  0")
+                    print("Something went wrong because both f(a) >= 0 and f(b) >=  0")
                     break
 
 
 # For this class, we want to show "k correct digits", which is not quite
 # the same as rounding down. Here, we display extra digits and then truncate,
 # which is very close to the correct thing.
-cAsInt = math.floor(c_n) if (c_n > 0) else math.ceil(c_n)
-cDecimals = abs(c_n - cAsInt)
+cAsInt = math.floor(c) if (c > 0) else math.ceil(c)
+cDecimals = abs(c - cAsInt)
 cDecimalsAsString = "{:.20}".format(cDecimals)
 cAsString = str(cAsInt) + cDecimalsAsString[1:k+2]
 print("The approximate root is " + cAsString)
