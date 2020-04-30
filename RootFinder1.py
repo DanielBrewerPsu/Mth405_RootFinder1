@@ -10,6 +10,8 @@ import math
 import random
 random.seed()
 
+
+
 class Polynomial(object):
     # degree is the highest degree (exponent) in the polynomial. For ex: x^4 + 2x^2 is degree 4
     def __init__(self, degree, maxCoefficient):
@@ -44,38 +46,40 @@ class Polynomial(object):
             result = result + self.coefficients[i] * (x ** i)
         return result
 
+# Here's an example Polynomial for the function in HW8: -1*x**3 + 10*x + 15
+#hw8Poly = Polynomial(3, 1.0)
+#hw8Poly.coefficients = [15.0, 10.0, 0.0, -1.0]
+#print("HW8 poly looks like: " + hw8Poly.getDescription())
 
-# Make a Polynomial for the function in HW8: -1*x**3 + 10*x + 15
-hw8Poly = Polynomial(3, 1.0)
-hw8Poly.coefficients = [15.0, 10.0, 0.0, -1.0]
-print("HW8 poly looks like: " + hw8Poly.getDescription())
-
-#def f(x):s
+def fFromDay8(x):
     #This approximates the function in worksheet 8, a discontinuous graph
-    # if x <= 3.6875:
-    #     return 5
-    # else:
-    #     return -5
+     if x <= 3.6875:
+         return 5
+     else:
+         return -5
 
 
-# Initialize search parameters
-a_1 = 3.5     # Initial value of left edge to search from
-b_1 = 4.0    # Initial value of right edge to search to
+### Declare input parameters from the user
+a_1 = 3.0      # Initial value of left edge to search from
+b_1 = 4.0      # Initial value of right edge to search to
+k = 3           # number of base-10 digits to find
+f = fFromDay8   # f is the function we'll evaluate in this root approximation algorithm
+### End declaration of user input parameters
+
+
+# Initialize a few variables needed for the bisection algorithm
 if a_1 >= b_1:
     print("a_1 must be less than b_1")
     exit(0)
 a_n = a_1
 b_n = b_1
-k = 3       # Number of digits to get to match
 minimumDeltaX = 1.0 / (2 * 10**(k)) # 1/2 of the decimal place we care about
-
 # Print column headers
 print("n Step   a_n left    f(a_n) b_n right  f(b_n) c_n mid     f(c_n) a-b delta" +
       "   error in f")
-
-# f is the function we'll evaluate in this root approximation algorithm
-f = hw8Poly.evalAt
 kMaxIterations = 50
+
+
 for n in range(1, kMaxIterations):
     f_a_n = f(a_n)
     f_b_n = f(b_n)
