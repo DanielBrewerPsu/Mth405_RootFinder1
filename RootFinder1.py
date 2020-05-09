@@ -33,7 +33,7 @@ class Polynomial(object):
         self.coefficients = (self.coefficients - 0.5) * (2 * maxCoefficient)
         # The highest degree coefficient is special and cannot be 0
         while self.coefficients[self.degree] == 0.0:
-            self.coefficients[self.degree] = random.randrange(-1 * maxCoefficient, maxCoefficient)
+            self.coefficients[self.degree] = random.uniform(-1.0*maxCoefficient, 1.0*maxCoefficient)
 
     # returns a string describing the polynomial like: "10x^3 -1.5x^2 + 99x - 45.5"
     def getDescription(self):
@@ -45,11 +45,9 @@ class Polynomial(object):
                     bIsFirstTerm = False
                 else:
                     result = result + " + "
-                #result = result + "{:.f}".format(self.coefficients[i]) + "x^" + str(i)
-                result = result + str(self.coefficients[i]) + "x^" + str(i)
+                result = result + "{:.2f}".format(self.coefficients[i]) + "*x^" + str(i)
         # The loop above stopped before printing 0, which is a special case anyway
-        #result = result + "{:.f}".format(self.coefficients[0])
-        result = result + " + " + str(self.coefficients[0])
+        result = result + "{:.2f}".format(self.coefficients[0])
         return result
 
     # returns the value of this function evaluated at x
@@ -69,7 +67,7 @@ def fFromDay8(x):
          return -5
 
 
-k = 3           # number of base-10 digits to find
+k = 2           # number of base-10 digits to find
 minimumDeltaX = 1.0 / (2 * 10**k)  # 1/2 of the decimal place we care about
 kMaxIterations = 100     # A global const to ensure we don't search endlessly for a root
 
@@ -129,6 +127,7 @@ def printRowData(rowDataList):
         print("%6d   % 1.7f   % 2.2f   % 1.7f   % 2.2f   %1.8f   % 2.2f   %1.7f   % 2.2f" %
               rowData)
 
+
 def getStringWithKCorrectDigits(num):
     # For this class, we want to show "k correct digits", which is not quite
     # the same as rounding down. Here, we display extra digits and then truncate,
@@ -139,16 +138,42 @@ def getStringWithKCorrectDigits(num):
     return str(numAsInt) + nonIntPartAsString[1:k+2]
 
 
-# Apply these functions to a basic polynomial
-poly = Polynomial(3, 1.0)
-poly.coefficients = [15.0, 10.0, 0.0, -1.0]
-print("The polynomial looks like: " + poly.getDescription())
-results = (False, [])
-while not results[0]:
-    print("Applying bisection method")
-    results = applyBisectionMethod(poly.evalAt, 3.0, 4.0)
+print(" -======================-")
+print("To find this number of correct decimal places " + str(k) + " (\"= k\") :")
+print()
 
-printRowData(results[1])
+polysToTry = 3
+for i in range(1, polysToTry):
+    # This loop does: "Generate random polys and find their roots... and retry until we succeed."
+    results = (False, [])
+    while not results[0]:
+        # Generate a random 3-rd degree polynomial
+        poly = Polynomial(3, 50.0)
+        # Find a_1 and b_1, the left and right points of the search interval
+        a_1 = -.1
+        b_1 =  .1
+        # Keep expanding the search interval randomly until there's a sign change in it
+        f = poly.evalAt
+        while ((f(a_1) < 0 and f(b_1) < 0) or (f(a_1) > 0 and f(b_1) > 0)):
+            a_1 = a_1 * random.uniform(2.0, 10.0)
+            b_1 = b_1 * random.uniform(2.0, 10.0)
 
-c = results[1][-1][5]  # pull c from the last row
-print("The approximate root is " + getStringWithKCorrectDigits(c))
+        results = applyBisectionMethod(poly.evalAt, a_1, b_1)
+
+    # Print various output about the results of the Bisection Method
+    print("For the polynomial: " + poly.getDescription())
+
+    #printRowData(results[1])
+
+    #c = results[1][-1][5]  # pull c from the last row
+    #print("The approximate root is " + getStringWithKCorrectDigits(c))
+
+    print("Search interval            = [{:.2f}".format(a_1) + ", {:.2f}".format(b_1) + "]")
+    print("b_1 - a_1                  = " + str(b_1 - a_1))
+    sizeOfSolutionSpace = (b_1 - a_1) * 10**(k+1)
+    print("Size of solution space     = " + "{:.0f}".format(sizeOfSolutionSpace) + "    ... =  (b_1 - a_1)*10^(k+1)")
+    print("Number of steps            = " + str(len(results[1])))
+    print("log_2(sizeOfSolutionSpace) = " + str(math.log(sizeOfSolutionSpace, 2)))
+    print("-------------------------------")
+    print()
+
